@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.GuiController">
+   <children>
+      <Button fx:id="selectHotspotData" layoutX="646.0" layoutY="48.0" mnemonicParsing="false" onAction="#hotspotFileSelector" text="..." />
+      <Button fx:id="selectProblemData" layoutX="646.0" layoutY="89.0" mnemonicParsing="false" onAction="#problemFileSelector" text="..." />
+      <TextField fx:id="hotspotPath" editable="false" focusTraversable="false" layoutX="51.0" layoutY="48.0" prefHeight="25.0" prefWidth="572.0" promptText="Please select the hotspot file" />
+      <TextField fx:id="problemPath" editable="false" focusTraversable="false" layoutX="51.0" layoutY="89.0" prefHeight="25.0" prefWidth="572.0" promptText="Please select the problem measurement files" />
+      <Button fx:id="selectComparisonData" layoutX="646.0" layoutY="129.0" mnemonicParsing="false" onAction="#comparisonFileSelector" text="..." />
+      <TextField fx:id="comparisonPath" editable="false" focusTraversable="false" layoutX="51.0" layoutY="129.0" prefHeight="25.0" prefWidth="572.0" promptText="Please select the comparison files" />
+      <Button fx:id="start" layoutX="687.0" layoutY="129.0" mnemonicParsing="false" onAction="#startClicked" text="Start Analysis" />
+      <Label layoutX="25.0" layoutY="7.0" text="PADprof">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="resultBox" layoutX="51.0" layoutY="308.0" prefHeight="269.0" prefWidth="702.0" />
+      <CheckBox fx:id="cthBox" layoutX="51.0" layoutY="173.0" mnemonicParsing="false" onAction="#triggerCTH" text="Circuitous Treasure Hunt" />
+      <CheckBox fx:id="epBox" layoutX="292.0" layoutY="173.0" mnemonicParsing="false" onAction="#triggerEP" text="Extensive Processing" />
+      <CheckBox fx:id="wcBox" layoutX="566.0" layoutY="173.0" mnemonicParsing="false" onAction="#triggerWC" text="Wong Cache Strategy" />
+      <TextField fx:id="cthCpuPercentage" disable="true" layoutX="180.0" layoutY="237.0" prefHeight="25.0" prefWidth="36.0" text="10" AnchorPane.leftAnchor="180.0" />
+      <TextField fx:id="cthMethodCount" disable="true" layoutX="181.0" layoutY="200.0" prefHeight="25.0" prefWidth="36.0" text="25" AnchorPane.leftAnchor="180.0" />
+      <Label layoutX="302.0" layoutY="241.0" text="Method ExecTime Threshold:" />
+      <Label layoutX="15.0" layoutY="204.0" text="Method CallCount Threshold:" />
+      <TextField fx:id="epMethodPercentage" disable="true" layoutX="467.0" layoutY="237.0" prefHeight="25.0" prefWidth="36.0" text="10" />
+      <Label layoutX="273.0" layoutY="204.0" text="Blocked Threads Count Threshold:" />
+      <TextField fx:id="wcMethodPercentage" disable="true" layoutX="713.0" layoutY="200.0" prefHeight="25.0" prefWidth="36.0" text="10" />
+      <Label layoutX="542.0" layoutY="204.0" text="Method Percentage Threshold:" />
+      <Label layoutX="218.0" layoutY="241.0" text="\%" AnchorPane.leftAnchor="218.0" />
+      <ComboBox fx:id="analysisSelector" disable="true" layoutX="139.0" layoutY="275.0" prefHeight="25.0" prefWidth="98.0" visibleRowCount="3" />
+      <Label layoutX="41.0" layoutY="279.0" text="Analysis method:" />
+      <Label layoutX="241.0" layoutY="279.0" text="values" />
+      <Label layoutX="223.0" layoutY="204.0" text="\%" AnchorPane.leftAnchor="218.0" />
+      <Label layoutX="55.0" layoutY="241.0" text="CPU Usage Threshold:" />
+      <TextField fx:id="epBlockedThreadsPercentage" disable="true" layoutX="467.0" layoutY="200.0" prefHeight="25.0" prefWidth="36.0" text="25" />
+      <Label layoutX="509.0" layoutY="204.0" text="\%" />
+      <Label layoutX="509.0" layoutY="241.0" text="\%" />
+      <Label layoutX="759.0" layoutY="204.0" text="\%" />
+   </children>
+</AnchorPane>
