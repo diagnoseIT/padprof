@@ -142,12 +142,11 @@ public class AnalysisExecution {
 				if(averageMethodCountsAll.containsKey(methodName) && averageMethodCountsProb.containsKey(methodName)){
 					double problemMethodcount = averageMethodCountsProb.get(methodName);
 					double averageMethodCount = averageMethodCountsAll.get(methodName);
-					
 					if ((problemMethodcount > (averageMethodCount * countThreshold))) {
 						double methodCountDeviation = ((problemMethodcount / averageMethodCount) - 1.00) * 100;
 						System.out.println(" ");
 						System.out.println("*" + methodName + "*" + " is detected!");
-						System.out.println("Method count: " + problemMethodcount + " vs. " + averageMethodCount
+						System.out.println("Method CallCount: " + problemMethodcount + " vs. " + averageMethodCount
 								+ " deviation: " + (Math.floor(methodCountDeviation * 100) / 100) + "%");
 						System.out.println("CPU Usage: " + averageCpuUsageProb + "% vs. " + averageCpuUsageAll
 								+ "% deviation: " + deviationCpu + "%");
@@ -157,7 +156,7 @@ public class AnalysisExecution {
 					}
 					
 				} else {
-					System.out.println("*" + methodName + "* could not been analyzed due too few data! The method is either not available in the problem snapshot or the comparison snapshots.");
+					System.out.println("*" + methodName + "* could not been analyzed due too few data! \n The method is either not available in the problem snapshot or the comparison snapshots.");
 				}
 					
 				}
@@ -183,7 +182,8 @@ public class AnalysisExecution {
 		// blocked threads analysis
 		double blockedThreadsCountAll = 0;
 		for (MonitorUsage monitorUsage : comparisonMonitor) {
-			blockedThreadsCountAll = monitorUsage.getBlockedThreadCount();
+			blockedThreadsCountAll += monitorUsage.getBlockedThreadCount();
+			
 		}
 		double blockedThreadsCountProb = problemMonitor.getBlockedThreadCount();
 		blockedThreadsCountAll = (blockedThreadsCountAll + blockedThreadsCountProb) / (comparisonMonitor.size() + 1);
@@ -219,7 +219,7 @@ public class AnalysisExecution {
 					}
 					
 				} else {
-					System.out.println("*" + methodName + "* could not been analyzed due too few data! The method is either not available in the problem snapshot or the comparison snapshots.");
+					System.out.println("*" + methodName + "* could not been analyzed due too few data!\n The method is either not available in the problem snapshot or the comparison snapshots.");
 				}
 
 			}
@@ -248,42 +248,45 @@ public class AnalysisExecution {
 		HashMap<String, Double> averageMethodPercentageAll = getAverageMethodPercentage(tempAllThreadsAll);
 		HashMap<String, Double> averageMethodPercentageProb = getAverageMethodPercentage(tempAllThreadsProb);
 		for (String methodName : importantMethods) {
-			//check if method is available
-			if(averageMethodPercentageAll.containsKey(methodName) && averageMethodPercentageProb.containsKey(methodName)){
-				
-				double percentageAll = averageMethodPercentageAll.get(methodName);
-				double percentageProb = averageMethodPercentageProb.get(methodName);
-				
-				if (percentageProb > percentageAll + methodTimeThreshold) {
-					// additional heap memory usage information
-					double averageHeapMemAll = 0;
+			if(methodName.toLowerCase().contains("cache")){
+				//check if method is available
+				if(averageMethodPercentageAll.containsKey(methodName) && averageMethodPercentageProb.containsKey(methodName)){
 					
-					for(int i = 0; i < comparisonCpuCSV.size(); i++){
+					double percentageAll = averageMethodPercentageAll.get(methodName);
+					double percentageProb = averageMethodPercentageProb.get(methodName);
+					
+					if (percentageProb > percentageAll + methodTimeThreshold) {
+						// additional heap memory usage information
+						double averageHeapMemAll = 0;
 						
-						ArrayList<Long> timestamps = comparisonCpuCSV.get(i).getFilteredCpuTimeStamps(5);
-						averageHeapMemAll += comparisonMemCSV.get(i).getAverageHeapMemoryUsage("Used PS Eden Space (bytes)", timestamps);
+						for(int i = 0; i < comparisonCpuCSV.size(); i++){
+							
+							ArrayList<Long> timestamps = comparisonCpuCSV.get(i).getFilteredCpuTimeStamps(5);
+							averageHeapMemAll += comparisonMemCSV.get(i).getAverageHeapMemoryUsage("Used PS Eden Space (bytes)", timestamps);
+						}
+						
+						
+						ArrayList<Long> timestamps = problemCpuCSV.getFilteredCpuTimeStamps(5);
+						double averageHeapMemProb = problemMemCSV.getAverageHeapMemoryUsage("Used PS Eden Space (bytes)", timestamps);
+						averageHeapMemAll = (averageHeapMemAll + averageHeapMemProb) / (comparisonCpuCSV.size() + 1);
+						averageHeapMemAll = Math.floor(averageHeapMemAll * 100) / 100;
+						averageHeapMemProb = Math.floor(averageHeapMemProb * 100) / 100;
+						
+						double deviation = Math.floor((percentageProb - percentageAll) * 100) / 100;
+						double heapMemDeviation = ((averageHeapMemProb / averageHeapMemAll) - 1.00) * 100;
+						System.out.println("");
+						System.out.println("*" + methodName + "*" + " is detected!");
+						System.out.println("Method Time (percentage): " + percentageProb + "% vs. " + Math.floor(percentageAll * 100) / 100
+								+ "% deviation: " + deviation + "%");
+						System.out.println("Heap-Memory Usage: " + averageHeapMemProb + "MB vs. " + averageHeapMemAll
+								+ "MB deviation: " + Math.floor(heapMemDeviation * 100) / 100 + "%");
+						System.out.println("");
+						foundAny = true;
 					}
-					
-					
-					ArrayList<Long> timestamps = problemCpuCSV.getFilteredCpuTimeStamps(5);
-					double averageHeapMemProb = problemMemCSV.getAverageHeapMemoryUsage("Used PS Eden Space (bytes)", timestamps);
-					averageHeapMemAll = (averageHeapMemAll + averageHeapMemProb) / (comparisonCpuCSV.size() + 1);
-					averageHeapMemAll = Math.floor(averageHeapMemAll * 100) / 100;
-					averageHeapMemProb = Math.floor(averageHeapMemProb * 100) / 100;
-					
-					double deviation = Math.floor((percentageProb - percentageAll) * 100) / 100;
-					double heapMemDeviation = ((averageHeapMemProb / averageHeapMemAll) - 1.00) * 100;
-					System.out.println("");
-					System.out.println("*" + methodName + "*" + " is detected!");
-					System.out.println("Method Time (percentage): " + percentageProb + "% vs. " + Math.floor(percentageAll * 100) / 100
-							+ "% deviation: " + deviation + "%");
-					System.out.println("Heap-Memory Usage: " + averageHeapMemProb + "MB vs. " + averageHeapMemAll
-							+ "MB deviation: " + Math.floor(heapMemDeviation * 100) / 100 + "%");
-					System.out.println("");
-					foundAny = true;
+				} else {
+					System.out.println("*" + methodName + "* could not been analyzed due too few data! \n The method is either not available in the problem snapshot or the comparison snapshots.");
 				}
-			} else {
-				System.out.println("*" + methodName + "* could not been analyzed due too few data! The method is either not available in the problem snapshot or the comparison snapshots.");
+				
 			}
 
 		}
@@ -304,10 +307,10 @@ public class AnalysisExecution {
 	 */
 	public HashMap<String, Integer> getAverageMethodCount(ArrayList<CallTree> threadData, String option) {
 		HashMap<String, Integer> averageCounts = new HashMap<>();
-
+		
 		for (String hotspotMethod : importantMethods) {
 			int counter = 0;
-			int average = -1;
+			int average = 0;
 
 			for (CallTree callTree : threadData) {
 				int methodCount = 0;
@@ -332,7 +335,7 @@ public class AnalysisExecution {
 
 			}
 			// set average method count for each hotspotmethod
-			if (counter != 0)
+			if (counter != 0 && counter != -1)
 				averageCounts.put(hotspotMethod, (average / counter));
 
 		}
